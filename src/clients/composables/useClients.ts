@@ -14,13 +14,23 @@ const getClients = async():Promise<Client[]> => {
 
 const useClients = () => {
 
+    const store = useClientsStore()
+    const { currentPage, clients, totalPages } = storeToRefs( store )
+
     const { isLoading, data } = useQuery({
         queryKey: ['clients?page=', 1 ],
         queryFn: getClients
     })
 
+    watch( data, clients => {
+        if( clients )
+            store.setClients( clients );
+    });
+
     return {
-        isLoading
+        // Properties
+        isLoading,
+        clients
     }
 }
 
