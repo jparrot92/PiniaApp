@@ -32,7 +32,17 @@ const useClients = () => {
         isLoading,
         clients,
         currentPage,
-        totalPages
+        totalPages,
+
+        // Methods
+        getPage( page: number ){
+            store.setPage( page )
+        },
+
+        // Getters [1,2,3,4,5], 
+        totalPageNumbers: computed(
+            () => [...new Array(totalPages.value)].map( (v, i) => i + 1 )
+        ),
     }
 }
 
