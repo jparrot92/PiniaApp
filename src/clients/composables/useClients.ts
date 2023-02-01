@@ -6,9 +6,9 @@ import { useClientsStore } from '@/store/clients';
 import clientsApi from '@/api/clients-api';
 import type { Client } from '@/clients/interfaces/client';
 
-const getClients = async():Promise<Client[]> => {
+const getClients = async( page: number ):Promise<Client[]> => {
 
-    const { data } = await clientsApi.get<Client[]>(`/clients?_page=1`);
+    const { data } = await clientsApi.get<Client[]>(`/clients?_page=${page}`);
     return data
 }
 
@@ -18,8 +18,8 @@ const useClients = () => {
     const { currentPage, clients, totalPages } = storeToRefs( store )
 
     const { isLoading, data } = useQuery({
-        queryKey: ['clients?page=', 1 ],
-        queryFn: getClients
+        queryKey: ['clients?page=', currentPage  ],
+        queryFn: () => getClients( currentPage.value )
     })
 
     watch( data, clients => {
