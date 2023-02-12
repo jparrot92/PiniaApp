@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 import { useRoute } from 'vue-router'
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 
 import LoadingModal from '@/shared/components/LoadingModal.vue'
 import useClient from '@/clients/composables/useClient'
@@ -9,6 +9,7 @@ import type { Client } from '@/clients/interfaces/client'
 import clientsApi from '@/api/clients-api'
 
 const route = useRoute()
+// const queryClient = useQueryClient()
 
 const {
     client,
@@ -17,11 +18,15 @@ const {
 
 const updateClient = async( client: Client ):Promise<Client> => {
 
-    await new Promise( resolve => {
-        setTimeout( () => resolve(true), 2000 )
-    });
+    // await new Promise( resolve => {
+    //     setTimeout( () => resolve(true), 2000 )
+    // });
 
     const { data } = await clientsApi.patch<Client>(`/clients/${client.id}`, client )
+    // const queries = queryClient.getQueryCache().findAll(['clients?page='],{ exact: false })
+    // queries.forEach( query => query.reset())
+    // queries.forEach( query => query.fetch() )
+
     return data
 }
 
