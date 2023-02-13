@@ -1,41 +1,41 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
 
 import LoadingModal from '@/shared/components/LoadingModal.vue'
 import useClient from '@/clients/composables/useClient'
-import type { Client } from '@/clients/interfaces/client'
-import clientsApi from '@/api/clients-api'
 
 const route = useRoute()
 const router = useRouter()
-
 // const queryClient = useQueryClient()
 
 const {
     client,
     isLoading,
-    isError
+    isError,
+    clientMutation,
+    updateClient,
+    isUpdating,
+    isUpdatingSuccess,
 } = useClient( +route.params.id )
 
-const updateClient = async( client: Client ):Promise<Client> => {
+// const updateClient = async( client: Client ):Promise<Client> => {
 
-    // await new Promise( resolve => {
-    //     setTimeout( () => resolve(true), 2000 )
-    // });
+//     // await new Promise( resolve => {
+//     //     setTimeout( () => resolve(true), 2000 )
+//     // });
 
-    const { data } = await clientsApi.patch<Client>(`/clients/${client.id}`, client )
-    // const queries = queryClient.getQueryCache().findAll(['clients?page='],{ exact: false })
-    // queries.forEach( query => query.reset())
-    // queries.forEach( query => query.fetch() )
+//     const { data } = await clientsApi.patch<Client>(`/clients/${client.id}`, client )
+//     // const queries = queryClient.getQueryCache().findAll(['clients?page='],{ exact: false })
+//     // queries.forEach( query => query.reset())
+//     // queries.forEach( query => query.fetch() )
 
-    return data
-}
+//     return data
+// }
 
-const clientMutation = useMutation({
-  mutationFn: updateClient,
-})
+// const clientMutation = useMutation({
+//   mutationFn: updateClient,
+// })
 
 watch( clientMutation.isSuccess, () => {
     setTimeout(() => {
@@ -52,14 +52,14 @@ watch( isError, () => {
 </script>
 
 <template>
-    <h3 v-if="clientMutation.isLoading.value">Guardando...</h3>
-    <h3 v-if="clientMutation.isSuccess.value">Guardado</h3>
+    <h3 v-if="isUpdating">Guardando...</h3>
+    <h3 v-if="isUpdatingSuccess">Guardado</h3>
 
     <LoadingModal v-if="isLoading"/>
 
     <div v-if="client">
         <h1>{{ client.name }}</h1>
-        <form @submit.prevent="clientMutation.mutate(client!)">
+        <form @submit.prevent="updateClient(client!)">
             <input
                 type="text"
                 placeholder="Nombre"
@@ -75,7 +75,7 @@ watch( isError, () => {
 
             <button
                 type="submit"
-                :disabled="clientMutation.isLoading.value"
+                :disabled="isUpdating"
             >
                 Guardar
             </button>
